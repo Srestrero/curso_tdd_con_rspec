@@ -1,26 +1,37 @@
 version: "3"
-volumes: 
+volumes:
   postgresql_store_api:
   bundle_path_store_api:
 services:
   db_store:
     restart: on-failure:3
     image: postgres:13.2
-    volumes: 
+    volumes:
       - postgresql_store_api:/var/lib/postgresql/data
-    ports: 
+    ports:
       - 5432:5432
-    env_file: 
+    env_file:
       - enviroments/.env.postgresql
   store_api:
     restart: on-failure:3
     build:
      context: ./store_api
      dockerfile: Dockerfile
-    ports: 
+    ports:
       - 3000:3000
-    volumes: 
+    volumes:
      - ./store_api/:/home/developer/app
      - bundle_path_store_api:/usr/local/bundle
-    env_file: 
+    env_file:
       - enviroments/.env.store_api
+  front:
+    build: ./front
+    ports:
+     - "8080:8080" # use port that you want to in your local instead of 8091
+    volumes:
+     - ./front:/front
+     - front_node_modules:/front/node_modules
+volumes:
+  postgresql_store_api:
+  bundle_path_store_api:
+  front_node_modules:
